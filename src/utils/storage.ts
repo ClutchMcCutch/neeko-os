@@ -391,6 +391,60 @@ export function usePersistentStore() {
     setSyncMessage('Check your email for the Supabase sign-in link.');
   };
 
+  const signInWithPassword = async (email: string, password: string) => {
+    if (!supabase) {
+      setSyncStatus('local');
+      setSyncMessage('Supabase is not configured.');
+      return;
+    }
+
+    setSyncStatus('connecting');
+    setSyncMessage('Signing in...');
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setSyncStatus('error');
+      setSyncMessage(error.message);
+      return;
+    }
+
+    setSyncStatus('connecting');
+    setSyncMessage('Loading shared workspace...');
+  };
+
+  const signUpWithPassword = async (email: string, password: string) => {
+    if (!supabase) {
+      setSyncStatus('local');
+      setSyncMessage('Supabase is not configured.');
+      return;
+    }
+
+    setSyncStatus('connecting');
+    setSyncMessage('Creating account...');
+    const { data: signUpData, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      setSyncStatus('error');
+      setSyncMessage(error.message);
+      return;
+    }
+
+    if (signUpData.session) {
+      setSyncStatus('connecting');
+      setSyncMessage('Loading shared workspace...');
+      return;
+    }
+
+    setSyncStatus('auth-required');
+    setSyncMessage('Account created. Check email if Supabase requires confirmation, then sign in.');
+  };
+
   const signOut = async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
@@ -412,6 +466,8 @@ export function usePersistentStore() {
     userEmail,
     isCloudConfigured: isSupabaseConfigured,
     signInWithEmail,
+    signInWithPassword,
+    signUpWithPassword,
     signOut,
   };
 }

@@ -48,6 +48,8 @@ export default function App() {
     userEmail,
     isCloudConfigured,
     signInWithEmail,
+    signInWithPassword,
+    signUpWithPassword,
     signOut,
   } = usePersistentStore();
   const [activePage, setActivePage] = useState<PageId>('dashboard');
@@ -160,6 +162,8 @@ export default function App() {
           onImport={importData}
           onReset={resetData}
           onSignIn={signInWithEmail}
+          onPasswordSignIn={signInWithPassword}
+          onPasswordSignUp={signUpWithPassword}
           onSignOut={signOut}
         />
       </aside>

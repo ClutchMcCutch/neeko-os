@@ -13,6 +13,8 @@ interface WorkspaceDataControlsProps {
   onImport: (data: AppData) => void;
   onReset: () => void;
   onSignIn: (email: string) => Promise<void>;
+  onPasswordSignIn: (email: string, password: string) => Promise<void>;
+  onPasswordSignUp: (email: string, password: string) => Promise<void>;
   onSignOut: () => Promise<void>;
 }
 
@@ -26,11 +28,14 @@ export default function WorkspaceDataControls({
   onImport,
   onReset,
   onSignIn,
+  onPasswordSignIn,
+  onPasswordSignUp,
   onSignOut,
 }: WorkspaceDataControlsProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState(userEmail || '');
+  const [password, setPassword] = useState('');
   const lastSavedLabel = lastSavedAt
     ? new Date(lastSavedAt).toLocaleString([], {
         month: 'short',
@@ -74,7 +79,21 @@ export default function WorkspaceDataControls({
   const submitSignIn = async (event: FormEvent) => {
     event.preventDefault();
     if (!email.trim()) return;
+    if (password) {
+      await onPasswordSignIn(email.trim(), password);
+      return;
+    }
+
     await onSignIn(email.trim());
+  };
+
+  const createAccount = async () => {
+    if (!email.trim() || !password) {
+      setMessage('Enter email and password first.');
+      return;
+    }
+
+    await onPasswordSignUp(email.trim(), password);
   };
 
   const cloudTone =
@@ -123,13 +142,27 @@ export default function WorkspaceDataControls({
           <input
             className="field min-h-9 px-2 py-1.5 text-xs"
             type="email"
-            placeholder="team@email.com"
+            placeholder="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
+          <input
+            className="field min-h-9 px-2 py-1.5 text-xs"
+            type="password"
+            placeholder="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
           <button className="btn-primary min-h-9 w-full justify-start px-2" type="submit">
             <LogIn size={16} />
-            Email sign-in link
+            Sign in
+          </button>
+          <button className="btn-secondary min-h-9 w-full justify-start px-2" type="button" onClick={() => void createAccount()}>
+            <LogIn size={16} />
+            Create account
+          </button>
+          <button className="btn-ghost min-h-8 w-full justify-start px-2 text-xs" type="button" onClick={() => void onSignIn(email.trim())}>
+            Send email link instead
           </button>
         </form>
       ) : null}

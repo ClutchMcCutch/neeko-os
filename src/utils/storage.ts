@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { initialData } from '../data/mockData';
 import { mergeOrderSheetInventory } from '../data/orderSheetInventory';
-import { isSupabaseConfigured, supabase, workspaceId } from '../services/supabase';
+import { isSupabaseConfigured, supabase, supabaseConfigError, workspaceId } from '../services/supabase';
 import type { AppData } from '../types';
 
 const STORAGE_KEY = 'neeko-eventos-data-v1';
@@ -99,7 +99,7 @@ export function usePersistentStore() {
   const [syncMessage, setSyncMessage] = useState(
     isSupabaseConfigured
       ? 'Connect with email to sync this workspace.'
-      : 'Supabase is not configured. Saving locally only.',
+      : supabaseConfigError || 'Supabase is not configured. Saving locally only.',
   );
   const [userEmail, setUserEmail] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -125,7 +125,7 @@ export function usePersistentStore() {
   useEffect(() => {
     if (!isSupabaseConfigured || !supabase) {
       setSyncStatus('local');
-      setSyncMessage('Supabase is not configured. Saving locally only.');
+      setSyncMessage(supabaseConfigError || 'Supabase is not configured. Saving locally only.');
       return;
     }
 

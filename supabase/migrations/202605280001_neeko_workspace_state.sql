@@ -5,7 +5,7 @@ create table if not exists public.team_members (
 );
 
 insert into public.team_members (email, role)
-values ('jlroberts510@gmail.com', 'owner')
+values ('info@libertyhospitalityphl.com', 'owner')
 on conflict (email) do update set role = excluded.role;
 
 create table if not exists public.workspace_state (

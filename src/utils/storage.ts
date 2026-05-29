@@ -103,6 +103,7 @@ export function usePersistentStore() {
   );
   const [userEmail, setUserEmail] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [sessionLoadKey, setSessionLoadKey] = useState(0);
 
   const dataRef = useRef(data);
   const cloudLoadedRef = useRef(false);
@@ -144,6 +145,9 @@ export function usePersistentStore() {
       setUserEmail(session?.user.email ?? '');
       setSyncStatus(session ? 'connecting' : 'auth-required');
       setSyncMessage(session ? 'Loading shared workspace...' : 'Sign in to sync with your team.');
+      if (session) {
+        setSessionLoadKey((current) => current + 1);
+      }
     });
 
     const {
@@ -151,9 +155,23 @@ export function usePersistentStore() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(Boolean(session));
       setUserEmail(session?.user.email ?? '');
-      cloudLoadedRef.current = false;
-      setSyncStatus(session ? 'connecting' : 'auth-required');
-      setSyncMessage(session ? 'Loading shared workspace...' : 'Sign in to sync with your team.');
+
+      if (!session) {
+        cloudLoadedRef.current = false;
+        setSyncStatus('auth-required');
+        setSyncMessage('Sign in to sync with your team.');
+        return;
+      }
+
+      if (!cloudLoadedRef.current) {
+        setSyncStatus('connecting');
+        setSyncMessage('Loading shared workspace...');
+        setSessionLoadKey((current) => current + 1);
+        return;
+      }
+
+      setSyncStatus((current) => (current === 'saving' ? current : 'synced'));
+      setSyncMessage('Synced with Supabase.');
     });
 
     return () => {
@@ -223,7 +241,7 @@ export function usePersistentStore() {
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, sessionLoadKey]);
 
   useEffect(() => {
     const client = supabase;

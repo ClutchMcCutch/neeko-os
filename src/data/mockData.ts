@@ -1,4 +1,5 @@
 import type { AppData, Drink, Event, InventoryItem, Lead, Quote } from '../types';
+import { mockBookkeeping } from './bookkeepingData';
 
 export const mockDrinks: Drink[] = [
   {
@@ -475,4 +476,5 @@ export const initialData: AppData = {
   inventory: mockInventory,
   quotes: mockQuotes,
   leads: mockLeads,
+  bookkeeping: mockBookkeeping,
 };

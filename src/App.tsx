@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  BookOpenCheck,
   CalendarDays,
   ClipboardList,
   LayoutDashboard,
@@ -11,6 +12,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import WorkspaceDataControls from './components/WorkspaceDataControls';
+import BookkeepingPage from './pages/BookkeepingPage';
 import DashboardPage from './pages/DashboardPage';
 import DrinksPage from './pages/DrinksPage';
 import EventsPage from './pages/EventsPage';
@@ -33,6 +35,7 @@ const navItems: { id: PageId; label: string; icon: LucideIcon }[] = [
   { id: 'inventory', label: 'Inventory', icon: Package },
   { id: 'leads', label: 'Leads', icon: Users },
   { id: 'profit', label: 'Profit', icon: BarChart3 },
+  { id: 'bookkeeping', label: 'Bookkeeping', icon: BookOpenCheck },
 ];
 
 export default function App() {
@@ -105,6 +108,13 @@ export default function App() {
         );
       case 'profit':
         return <ProfitPage events={data.events} />;
+      case 'bookkeeping':
+        return (
+          <BookkeepingPage
+            bookkeeping={data.bookkeeping}
+            onBookkeepingChange={(bookkeeping) => setData((current) => ({ ...current, bookkeeping }))}
+          />
+        );
       case 'dashboard':
       default:
         return <DashboardPage data={data} onNavigate={(page) => setActivePage(page as PageId)} />;

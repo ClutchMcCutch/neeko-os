@@ -6,4 +6,5 @@ export type PageId =
   | 'prep'
   | 'inventory'
   | 'leads'
-  | 'profit';
+  | 'profit'
+  | 'bookkeeping';

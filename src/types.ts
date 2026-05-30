@@ -171,6 +171,112 @@ export interface Lead {
   potentialEventValue: number;
 }
 
+export interface BookkeepingExpense {
+  id: string;
+  item: string;
+  preparedDate: string;
+  soldDate: string;
+  location: string;
+  eventCode: string;
+  supplier: string;
+  amount: number;
+  notes: string;
+}
+
+export interface BookkeepingSale {
+  id: string;
+  date: string;
+  expenseAmount: number;
+  transactions: number | string;
+  revenue: number;
+  notes: string;
+  eventCode: string;
+}
+
+export interface PayrollEntry {
+  id: string;
+  date: string;
+  firstName: string;
+  lastName: string;
+  position: string;
+  department: string;
+  workedHours: number;
+  hourlyRate: number;
+  shiftPay: number;
+  tips: number;
+}
+
+export interface TipPoolEntry {
+  id: string;
+  date: string;
+  firstName: string;
+  lastName: string;
+  position: string;
+  department: string;
+  workedHours: number;
+  creditTips: number;
+  tipSharePercent: number;
+  totalTipIn: number;
+  totalTipOut: number;
+}
+
+export interface DrinkCostEntry {
+  id: string;
+  drinkName: string;
+  category: 'non-spirit' | 'na-spirit';
+  drinkCost: number;
+  unitAmount: number;
+  salePrice: number;
+}
+
+export interface BatchCostEntry {
+  id: string;
+  batchName: string;
+  nonSpiritCost: number;
+  spiritCost: number;
+  unitAmount: string;
+  spiritBatchName: string;
+  spiritOne: string;
+  spiritOneMl: number;
+  spiritOneCostPerBottle: number;
+  spiritTwo: string;
+  spiritTwoMl: number;
+  spiritTwoCostPerBottle: number;
+  totalMl: number;
+  totalBatchCost: number;
+}
+
+export interface VendorPriceEntry {
+  id: string;
+  itemName: string;
+  brand: string;
+  orderFrom: string;
+  size: string;
+  price: number;
+  linkLabel: string;
+  costPerPortion: string;
+  kind: 'ingredient' | 'spirit';
+}
+
+export interface BusinessResource {
+  id: string;
+  accountFor: string;
+  usedFor: string;
+  email: string;
+  notes: string;
+}
+
+export interface BookkeepingData {
+  expenses: BookkeepingExpense[];
+  sales: BookkeepingSale[];
+  payroll: PayrollEntry[];
+  tipPool: TipPoolEntry[];
+  drinkCosts: DrinkCostEntry[];
+  batches: BatchCostEntry[];
+  vendorPrices: VendorPriceEntry[];
+  resources: BusinessResource[];
+}
+
 export interface PrepIngredientTotal {
   name: string;
   amountOz: number;
@@ -203,4 +309,5 @@ export interface AppData {
   inventory: InventoryItem[];
   quotes: Quote[];
   leads: Lead[];
+  bookkeeping: BookkeepingData;
 }

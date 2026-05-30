@@ -47,6 +47,35 @@ function normalizeData(data: Partial<AppData>): AppData {
     inventory: Array.isArray(data.inventory) ? data.inventory : initialData.inventory,
     quotes: Array.isArray(data.quotes) ? data.quotes : initialData.quotes,
     leads: Array.isArray(data.leads) ? data.leads : initialData.leads,
+    bookkeeping:
+      data.bookkeeping && typeof data.bookkeeping === 'object'
+        ? {
+            expenses: Array.isArray(data.bookkeeping.expenses)
+              ? data.bookkeeping.expenses
+              : initialData.bookkeeping.expenses,
+            sales: Array.isArray(data.bookkeeping.sales)
+              ? data.bookkeeping.sales
+              : initialData.bookkeeping.sales,
+            payroll: Array.isArray(data.bookkeeping.payroll)
+              ? data.bookkeeping.payroll
+              : initialData.bookkeeping.payroll,
+            tipPool: Array.isArray(data.bookkeeping.tipPool)
+              ? data.bookkeeping.tipPool
+              : initialData.bookkeeping.tipPool,
+            drinkCosts: Array.isArray(data.bookkeeping.drinkCosts)
+              ? data.bookkeeping.drinkCosts
+              : initialData.bookkeeping.drinkCosts,
+            batches: Array.isArray(data.bookkeeping.batches)
+              ? data.bookkeeping.batches
+              : initialData.bookkeeping.batches,
+            vendorPrices: Array.isArray(data.bookkeeping.vendorPrices)
+              ? data.bookkeeping.vendorPrices
+              : initialData.bookkeeping.vendorPrices,
+            resources: Array.isArray(data.bookkeeping.resources)
+              ? data.bookkeeping.resources
+              : initialData.bookkeeping.resources,
+          }
+        : initialData.bookkeeping,
   };
 }
 

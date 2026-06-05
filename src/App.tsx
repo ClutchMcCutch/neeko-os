@@ -24,6 +24,7 @@ import QuotesPage from './pages/QuotesPage';
 import type { PageId } from './pageTypes';
 import type { Quote } from './types';
 import { quoteToEventPatch } from './utils/calculations';
+import { sortInventoryItems } from './utils/inventory';
 import { usePersistentStore } from './utils/storage';
 
 const navItems: { id: PageId; label: string; icon: LucideIcon }[] = [
@@ -90,12 +91,23 @@ export default function App() {
       case 'quotes':
         return <QuotesPage drinks={data.drinks} events={data.events} quotes={data.quotes} onSaveQuote={saveQuote} />;
       case 'prep':
-        return <PrepPage events={data.events} drinks={data.drinks} inventory={data.inventory} />;
+        return (
+          <PrepPage
+            events={data.events}
+            drinks={data.drinks}
+            inventory={data.inventory}
+            onInventoryChange={(inventory) =>
+              setData((current) => ({ ...current, inventory: sortInventoryItems(inventory) }))
+            }
+          />
+        );
       case 'inventory':
         return (
           <InventoryPage
             inventory={data.inventory}
-            onInventoryChange={(inventory) => setData((current) => ({ ...current, inventory }))}
+            onInventoryChange={(inventory) =>
+              setData((current) => ({ ...current, inventory: sortInventoryItems(inventory) }))
+            }
             onImportOrderSheet={importOrderSheet}
           />
         );

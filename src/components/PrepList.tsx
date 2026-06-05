@@ -1,4 +1,4 @@
-import { Printer, TriangleAlert } from 'lucide-react';
+import { Plus, Printer, TriangleAlert } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import type { Drink, Event as NeekoEvent, InventoryItem } from '../types';
 import {
@@ -12,9 +12,10 @@ interface PrepListProps {
   event: NeekoEvent;
   drinks: Drink[];
   inventory: InventoryItem[];
+  onAddMissingInventoryItem?: (itemName: string, amountOz: number) => void;
 }
 
-export default function PrepList({ event, drinks, inventory }: PrepListProps) {
+export default function PrepList({ event, drinks, inventory, onAddMissingInventoryItem }: PrepListProps) {
   const eventHours = eventDurationHours(event);
   const [drinksPerGuest, setDrinksPerGuest] = useState(defaultDrinksPerGuest(eventHours));
   const prepList = useMemo(
@@ -89,10 +90,22 @@ export default function PrepList({ event, drinks, inventory }: PrepListProps) {
                   <td>{formatNumber(item.gallons)}</td>
                   <td>
                     {item.warning ? (
-                      <span className="inline-flex items-center gap-1 text-neeko-rose">
-                        <TriangleAlert size={14} />
-                        {item.warning}
-                      </span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center gap-1 text-neeko-rose">
+                          <TriangleAlert size={14} />
+                          {item.warning}
+                        </span>
+                        {item.warning === 'Not tracked in inventory' && onAddMissingInventoryItem ? (
+                          <button
+                            className="btn-secondary no-print min-h-8 px-2 text-xs"
+                            type="button"
+                            onClick={() => onAddMissingInventoryItem(item.name, item.amountOz)}
+                          >
+                            <Plus size={14} />
+                            Add item
+                          </button>
+                        ) : null}
+                      </div>
                     ) : (
                       <span className="text-neeko-mint">Covered</span>
                     )}

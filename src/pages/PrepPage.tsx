@@ -3,19 +3,45 @@ import type { Drink, Event as NeekoEvent, InventoryItem } from '../types';
 import { useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import { ClipboardList } from 'lucide-react';
+import { inferInventoryCategory, sortInventoryItems } from '../utils/inventory';
+import { makeId } from '../utils/storage';
 
 interface PrepPageProps {
   events: NeekoEvent[];
   drinks: Drink[];
   inventory: InventoryItem[];
+  onInventoryChange: (inventory: InventoryItem[]) => void;
 }
 
-export default function PrepPage({ events, drinks, inventory }: PrepPageProps) {
+export default function PrepPage({ events, drinks, inventory, onInventoryChange }: PrepPageProps) {
   const serviceEvents = events.filter(
     (event) => event.status !== 'canceled' && !(event.status === 'completed' && event.paymentStatus === 'paid'),
   );
   const [selectedEventId, setSelectedEventId] = useState(serviceEvents[0]?.id ?? '');
   const selectedEvent = serviceEvents.find((event) => event.id === selectedEventId) ?? serviceEvents[0];
+  const addMissingInventoryItem = (itemName: string, amountOz: number) => {
+    const alreadyTracked = inventory.some(
+      (item) => item.itemName.trim().toLowerCase() === itemName.trim().toLowerCase(),
+    );
+
+    if (alreadyTracked) return;
+
+    onInventoryChange(
+      sortInventoryItems([
+        ...inventory,
+        {
+          id: makeId('inventory'),
+          itemName,
+          category: inferInventoryCategory(itemName),
+          currentAmount: 0,
+          unit: 'oz',
+          cost: 0,
+          lowStockThreshold: Math.ceil(amountOz),
+          notes: selectedEvent ? `Added from prep list for ${selectedEvent.eventName}.` : 'Added from prep list.',
+        },
+      ]),
+    );
+  };
 
   return (
     <div className="space-y-5">
@@ -41,7 +67,12 @@ export default function PrepPage({ events, drinks, inventory }: PrepPageProps) {
       </div>
 
       {selectedEvent ? (
-        <PrepList event={selectedEvent} drinks={drinks} inventory={inventory} />
+        <PrepList
+          event={selectedEvent}
+          drinks={drinks}
+          inventory={inventory}
+          onAddMissingInventoryItem={addMissingInventoryItem}
+        />
       ) : (
         <section className="panel p-6 text-stone-400">Create an event before generating a prep list.</section>
       )}

@@ -2,6 +2,7 @@ import { Edit3, Plus, Save, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 import type { InventoryCategory, InventoryItem, InventoryUnit } from '../types';
 import { currency } from '../utils/calculations';
+import { sortInventoryItems } from '../utils/inventory';
 import { makeId } from '../utils/storage';
 
 interface InventoryTableProps {
@@ -59,7 +60,8 @@ export default function InventoryTable({ items, onChange }: InventoryTableProps)
     if (!draft || !draft.itemName.trim()) return;
 
     const exists = items.some((item) => item.id === draft.id);
-    onChange(exists ? items.map((item) => (item.id === draft.id ? draft : item)) : [draft, ...items]);
+    const nextItems = exists ? items.map((item) => (item.id === draft.id ? draft : item)) : [draft, ...items];
+    onChange(sortInventoryItems(nextItems));
     setDraft(null);
   };
 
@@ -68,8 +70,10 @@ export default function InventoryTable({ items, onChange }: InventoryTableProps)
   };
 
   const deleteItem = (id: string) => {
-    onChange(items.filter((item) => item.id !== id));
+    onChange(sortInventoryItems(items.filter((item) => item.id !== id)));
   };
+
+  const sortedItems = sortInventoryItems(items);
 
   return (
     <section className="panel overflow-hidden">
@@ -157,7 +161,7 @@ export default function InventoryTable({ items, onChange }: InventoryTableProps)
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10">
-            {items.map((item) => {
+            {sortedItems.map((item) => {
               const low = item.currentAmount <= item.lowStockThreshold;
               return (
                 <tr key={item.id}>
